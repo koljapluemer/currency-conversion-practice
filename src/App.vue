@@ -29,6 +29,7 @@ generateRandomExercise();
 function generateRandomExercise() {
   // set dividend to random between 800 and 5
   dividend.value = Math.floor(Math.random() * (800 - 5 + 1) + 5);
+  isRevealed.value = false;
 }
 
 // function evaluateScore() {
