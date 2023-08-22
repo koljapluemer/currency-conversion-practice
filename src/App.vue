@@ -4,6 +4,7 @@ import { ref } from "vue";
 
 let dividend = ref(0);
 let divisor = ref(29);
+let guess = ref(0);
 let unitsPracticedToday = 0;
 let unitsPracticedYesterday = 0;
 
@@ -77,12 +78,13 @@ function generateRandomExercise() {
         </p>
       </div>
       <div class="card-actions justify-end mt-6 pt-2">
+      <input type="number" class="input p2 text-4xl" v-bind="guess">
         <button
           class="btn btn-primary"
           @click="isRevealed = true"
           v-if="!isRevealed"
         >
-          Reveal
+          Check
         </button>
         <button class="btn btn-primary" @click="generateRandomExercise" v-else>
           Next Exercise
