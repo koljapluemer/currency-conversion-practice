@@ -5,6 +5,7 @@ import { ref } from "vue";
 let dividend = ref(0);
 let divisor = ref(29);
 let guess = ref(0);
+const results = ref([]);
 let unitsPracticedToday = 0;
 let unitsPracticedYesterday = 0;
 
@@ -30,6 +31,17 @@ function generateRandomExercise() {
   // set dividend to random between 800 and 5
   dividend.value = Math.floor(Math.random() * (800 - 5 + 1) + 5);
   isRevealed.value = false;
+}
+
+function evaluateScore() {
+  results.value.push({
+    date: new Date().toISOString(),
+    dividend: dividend.value,
+    divisor: divisor.value,
+    guess: guess.value,
+    correct: dividend.value / divisor.value,
+  });
+  generateRandomExercise();
 }
 
 // function evaluateScore() {
@@ -87,12 +99,14 @@ function generateRandomExercise() {
         >
           Check
         </button>
-        <button class="btn btn-primary" @click="generateRandomExercise" v-else>
+        <button class="btn btn-primary" @click="evaluateScore" v-else>
           Next Exercise
         </button>
       </div>
     </div>
   </div>
+
+  {{ results }}
 </template>
 
 <style scoped></style>
