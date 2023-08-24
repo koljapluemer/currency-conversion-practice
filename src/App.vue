@@ -1,6 +1,6 @@
 <script setup>
 import words from "./words.js";
-import { ref } from "vue";
+import { ref, computed } from 'vue';
 
 let dividend = ref(0);
 let divisor = ref(29);
@@ -74,6 +74,32 @@ function evaluateScore() {
 //     getRandomWord();
 //   }
 // }
+
+
+const width = 400;
+const height = 300;
+const margin = 20;
+
+const dataPoints = ref([
+  { x: 10, y: 50 },
+  { x: 30, y: 70 },
+  { x: 50, y: 100 },
+  { x: 70, y: 40 },
+  { x: 90, y: 120 },
+]);
+
+const maxX = computed(() => Math.max(...dataPoints.value.map(point => point.x)));
+const maxY = computed(() => Math.max(...dataPoints.value.map(point => point.y)));
+
+const scaleX = computed(() => {
+  const xRange = maxX.value;
+  return x => (x / xRange) * (width - 2 * margin) + margin;
+});
+
+const scaleY = computed(() => {
+  const yRange = maxY.value;
+  return y => (y / yRange) * (height - 2 * margin) + margin;
+});
 </script>
 
 <template>
@@ -107,6 +133,39 @@ function evaluateScore() {
   </div>
 
   {{ results }}
+
+
+    <div>
+    <svg :width="width" :height="height">
+      <!-- Draw x-axis -->
+      <line
+        :x1="margin"
+        :y1="height - margin"
+        :x2="width - margin"
+        :y2="height - margin"
+        stroke="black"
+      />
+
+      <!-- Draw y-axis -->
+      <line
+        :x1="margin"
+        :y1="margin"
+        :x2="margin"
+        :y2="height - margin"
+        stroke="black"
+      />
+
+      <!-- Draw data points -->
+      <circle
+        v-for="(point, index) in dataPoints"
+        :key="index"
+        :cx="scaleX(point.x)"
+        :cy="height - scaleY(point.y)"
+        :r="4"
+        fill="blue"
+      />
+    </svg>
+  </div>
 </template>
 
 <style scoped></style>
