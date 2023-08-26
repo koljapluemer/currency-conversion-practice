@@ -1,6 +1,6 @@
 <script setup>
 import words from "./words.js";
-import { ref, computed } from 'vue';
+import { ref, computed } from "vue";
 
 const dividend = ref(0);
 const divisor = ref(33.49);
@@ -35,7 +35,7 @@ function generateRandomExercise() {
 }
 
 function evaluateScore() {
-  console.log("guess", guess.value)
+  console.log("guess", guess.value);
   results.value.push({
     date: new Date().toISOString(),
     dividend: dividend.value,
@@ -43,7 +43,10 @@ function evaluateScore() {
     guess: guess.value,
     correct: dividend.value / divisor.value,
     // missedByPercent: how much the guess was over or under the correct result, expressed as percent of the correct result
-    missedByPercent: (guess.value - dividend.value / divisor.value) / (dividend.value / divisor.value) * 100,
+    missedByPercent:
+      ((guess.value - dividend.value / divisor.value) /
+        (dividend.value / divisor.value)) *
+      100,
   });
   generateRandomExercise();
 }
@@ -79,39 +82,37 @@ function evaluateScore() {
 //   }
 // }
 
-
-const width = 400;
-const height = 300;
+const width = 800
+const height = 400;
 const margin = 40;
-
 
 // use the numbers of objects in results as maxX, but maximally the last 20
 const maxX = computed(() => Math.max(20, results.value.length));
 const maxY = computed(() => {
   // get the highest missedByPercent value from results
-  const max = Math.max(...results.value.map(point => point.missedByPercent));
+  const max = Math.max(...results.value.map((point) => point.missedByPercent));
   // round up to the next 10
   return Math.ceil(max / 10) * 10;
 });
 
 const minY = computed(() => {
   // get the lowest missedByPercent value from results
-  const min = Math.min(...results.value.map(point => point.missedByPercent));
+  const min = Math.min(...results.value.map((point) => point.missedByPercent));
   // round down to the next 10
   return Math.floor(min / 10) * 10;
 });
 
 const scaleX = computed(() => {
   const xRange = maxX.value;
-  return x => (x / xRange) * (width - 2 * margin) + margin;
+  return (x) => (x / xRange) * (width - 2 * margin) + margin;
 });
 
 // this doesn't need to be computed, but I don't actually understand the function :)
 const scaleY = computed(() => {
   const yRange = maxY.value - minY.value;
-  return y => height - ((y - minY.value) / yRange) * (height - 2 * margin) - margin;
+  return (y) =>
+    height - ((y - minY.value) / yRange) * (height - 2 * margin) - margin;
 });
-
 </script>
 
 <template>
@@ -120,17 +121,15 @@ const scaleY = computed(() => {
     class="card bg-gray-600 shadow-xl m-4 flex flex-col items-center w-full max-w-screen-xl"
   >
     <div class="card-body">
-      <h2 class="card-title my-2 text-6xl">
-        {{ dividend }} EGP in EUR?
-      </h2>
+      <h2 class="card-title my-2 text-6xl">{{ dividend }} EGP in EUR?</h2>
       <div :class="{ hidden: !isRevealed }" class="flex items-center gap-2">
         <p class="my-2 text-4xl">
-        <!-- round to two digits after point -->
+          <!-- round to two digits after point -->
           It's {{ (dividend / divisor).toFixed(2) }} EUR
         </p>
       </div>
       <div class="card-actions justify-end mt-6 pt-2">
-      <input type="number" class="input p2 text-4xl" v-model="guess">
+        <input type="number" class="input p2 text-4xl" v-model="guess" />
         <button
           class="btn btn-primary"
           @click="isRevealed = true"
@@ -147,8 +146,7 @@ const scaleY = computed(() => {
 
   <!-- {{ results }} -->
 
-
-    <div>
+  <div class="max-w-screen-md" id="svg-wrapper">
     <svg :width="width" :height="height" class="p4">
       <!-- Draw x-axis -->
       <line
@@ -186,8 +184,8 @@ const scaleY = computed(() => {
         :key="index"
         :cx="scaleX(index)"
         :cy="scaleY(point.missedByPercent)"
-        :r="4"
-        fill="blue"
+        :r="12"
+        fill="#7a29e9"
       />
     </svg>
   </div>
