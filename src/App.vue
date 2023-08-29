@@ -6,6 +6,10 @@ const dividend = ref(0);
 const divisor = ref(33.49);
 const guess = ref(0);
 const results = ref([]);
+
+const homeCurrency = "EUR";
+const foreignCurrency = "EGP";
+
 let unitsPracticedToday = 0;
 let unitsPracticedYesterday = 0;
 
@@ -82,7 +86,7 @@ function evaluateScore() {
 //   }
 // }
 
-const width = 800
+const width = 800;
 const height = 400;
 const margin = 40;
 
@@ -116,6 +120,17 @@ const scaleY = computed(() => {
 </script>
 
 <template>
+  <!-- <select> for the two currencies -->
+  <select class="input p2 text-4xl">
+    <option value="EUR">EUR</option>
+    <option value="EGP">EGP</option>
+  </select>
+
+  <select class="input p2 text-4xl">
+    <option value="EUR">EUR</option>
+    <option value="EGP">EGP</option>
+  </select>
+
   <!-- <small> Practiced {{ stats.counter }} times so far </small> -->
   <div
     class="card bg-gray-600 shadow-xl m-4 flex flex-col items-center w-full max-w-screen-xl"
