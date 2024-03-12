@@ -8,4 +8,3 @@
 - [ ] appropriately credited
 - [ ] branding: favicon, gh setup, backlinks at reasonable level
 - [ ] quality of code and doc feels appropriate
-- [ ] noted some kind of lessons learned (ideally, but not necessarily published)
