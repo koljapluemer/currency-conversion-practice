@@ -1,14 +1,8 @@
 # Currency-Conversion-Pratice
 
-![Project Image](/doc/img/project.png)
+![Screenshot](screenshot.png)
 
-
-Practice converting currencies in your head.
-
-## Acceptance Criteria
-
-- [x] make something I'm proud of
-- [ ] learn something new
+**Practice converting currencies in your head.**
 
 
 ## Contributing & Running Locally
