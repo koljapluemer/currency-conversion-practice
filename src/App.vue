@@ -53,9 +53,15 @@ function evaluateScore() {
   generateRandomExercise();
 }
 
-const width = 800;
-const height = 400;
-const margin = 40;
+const width = 400;
+const height = 200;
+const margin = 24;
+
+const currentError = computed(() => {
+  if (guess.value == null || !isRevealed.value) return null;
+  const correct = dividend.value / divisor.value;
+  return ((guess.value - correct) / correct) * 100;
+});
 
 // use the numbers of objects in results as maxX, but maximally the last 20
 const maxX = computed(() => Math.max(20, results.value.length));
@@ -87,99 +93,119 @@ const scaleY = computed(() => {
 </script>
 
 <template>
-  <main class="">
-    <div class="card m-4 bg-gray-900">
-      <div class="card-body">
-        <h2 class="card-title">Which conversion do you want to practice?</h2>
-        <!-- name of first, name of second, conversion rate (free input fields) -->
-        <input
-          type="text"
-          class="input p2 text-4xl"
-          placeholder="Home currency"
-          v-model="homeCurrency"
-        />
-        <input
-          type="text"
-          class="input p2 text-4xl"
-          placeholder="Foreign currency"
-          v-model="foreignCurrency"
-        />
-        <input
-          type="number"
-          class="input p2 text-4xl"
-          placeholder="Conversion rate"
-          v-model="divisor"
-        />
-      </div>
-    </div>
+  <main class="min-h-screen bg-base-300 p-4 md:p-8">
+    <div class="mx-auto max-w-lg flex flex-col gap-4">
 
-    <div class="card m-4 bg-gray-900">
-      <div class="card-body">
-        <h2 class="card-title my-2 text-4xl">
-          What is {{ dividend }} {{ foreignCurrency }} in {{ homeCurrency }}?
-        </h2>
-        <div :class="{ hidden: !isRevealed }" class="flex items-center gap-2">
-          <p class="my-2 text-4xl">
-            You guessed {{ guess }} {{ homeCurrency }}.
-            <!-- round to two digits after point -->
-            It's {{ (dividend / divisor).toFixed(2) }} {{ homeCurrency }}
-          </p>
-        </div>
-        <div class="card-actions mt-6 pt-2 w-full">
+      <!-- Config: collapsible, compact -->
+      <details class="collapse collapse-arrow bg-base-200 rounded-box">
+        <summary class="collapse-title text-sm font-medium py-3 min-h-0">
+          {{ foreignCurrency }} → {{ homeCurrency }} @ {{ divisor }}
+        </summary>
+        <div class="collapse-content flex flex-col gap-2 pb-4">
+          <div class="flex gap-2">
+            <input
+              type="text"
+              class="input input-sm flex-1"
+              placeholder="Foreign"
+              v-model="foreignCurrency"
+            />
+            <input
+              type="text"
+              class="input input-sm flex-1"
+              placeholder="Home"
+              v-model="homeCurrency"
+            />
+          </div>
           <input
-            ref="guessInput"
             type="number"
-            class="input p2 text-4xl"
-            v-model="guess"
-            v-if="!isRevealed"
-            @keyup.enter="guess != null && (isRevealed = true)"
+            class="input input-sm"
+            placeholder="Rate"
+            v-model="divisor"
+            step="0.01"
           />
-          <button
-            class="btn btn-primary"
-            @click="isRevealed = true"
-            v-if="!isRevealed"
-          >
-            Check <kbd class="kbd kbd-sm">↵</kbd>
-          </button>
-          <button class="btn btn-primary" @click="evaluateScore" v-else>
-            Next Exercise <kbd class="kbd kbd-sm">↵</kbd>
-          </button>
+        </div>
+      </details>
+
+      <!-- Exercise: prominent -->
+      <div class="card bg-base-200">
+        <div class="card-body gap-4 p-6">
+          <h2 class="text-2xl md:text-3xl font-bold">
+            {{ dividend }} {{ foreignCurrency }} = ?
+          </h2>
+
+          <div v-if="isRevealed" class="text-lg opacity-80">
+            You guessed <span class="font-semibold">{{ guess }}</span>.
+            It's <span class="font-semibold text-primary">{{ (dividend / divisor).toFixed(2) }}</span> {{ homeCurrency }}.
+            <span class="block text-sm mt-1" :class="Math.abs(currentError) < 1 ? 'text-success' : ''">
+              <template v-if="Math.abs(currentError) < 1">Spot on!</template>
+              <template v-else>{{ Math.abs(currentError).toFixed(0) }}% too {{ currentError > 0 ? 'high' : 'low' }}</template>
+            </span>
+          </div>
+
+          <div class="flex gap-2 mt-2">
+            <input
+              ref="guessInput"
+              type="number"
+              class="input input-bordered flex-1 text-xl"
+              :placeholder="homeCurrency"
+              v-model="guess"
+              v-if="!isRevealed"
+              @keyup.enter="guess != null && (isRevealed = true)"
+            />
+            <button
+              class="btn btn-primary"
+              @click="isRevealed = true"
+              v-if="!isRevealed"
+            >
+              Check <kbd class="kbd kbd-xs ml-1">↵</kbd>
+            </button>
+            <button class="btn btn-primary flex-1" @click="evaluateScore" v-else>
+              Next <kbd class="kbd kbd-xs ml-1">↵</kbd>
+            </button>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="card m-4 bg-gray-900">
-      <div class="card-body">
-        <h2 class="card-title">Your Guesses</h2>
-        <p>Perfect guesses are on the green line.</p>
-
-        <div class="max-w-screen-md" id="svg-wrapper">
-          <svg :width="width" :height="height" class="p4">
-            <!-- draw a horizontal green line at 0 -->
+      <!-- Graph: minimal -->
+      <div class="card bg-base-200" v-if="results.length || isRevealed">
+        <div class="card-body p-4">
+          <svg
+            :viewBox="`0 0 ${width} ${height}`"
+            class="w-full h-auto"
+            preserveAspectRatio="xMidYMid meet"
+          >
+            <!-- Zero line -->
             <line
               :x1="margin"
               :y1="scaleY(0)"
               :x2="width - margin"
               :y2="scaleY(0)"
-              stroke="green"
-              stroke-width="5"
+              class="stroke-base-content/20"
+              stroke-width="1"
             />
 
-            <!-- Draw data points -->
-            <!-- maximally use the last 20 results -->
-            <!-- get x value from position in results -->
-            <!-- get y value from missedByPercent -->
+            <!-- Data points -->
             <circle
               v-for="(point, index) in results.slice(-20)"
               :key="index"
               :cx="scaleX(index)"
               :cy="scaleY(point.missedByPercent)"
-              :r="12"
-              fill="#7a29e9"
+              r="4"
+              class="fill-primary"
+            />
+
+            <!-- Current guess (white) -->
+            <circle
+              v-if="isRevealed && currentError != null"
+              :cx="scaleX(results.length)"
+              :cy="scaleY(currentError)"
+              r="5"
+              fill="white"
             />
           </svg>
         </div>
       </div>
+
     </div>
   </main>
 </template>
