@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from "vue";
+import { ref, computed, onMounted, onUnmounted, nextTick } from "vue";
 
 const dividend = ref(0);
 const divisor = ref(1.2);
@@ -10,6 +10,7 @@ const homeCurrency = ref("EUR");
 const foreignCurrency = ref("USD");
 
 let isRevealed = ref(false);
+const guessInput = ref(null);
 
 function handleGlobalKeydown(e) {
   if (e.key === "Enter" && isRevealed.value) {
@@ -32,6 +33,7 @@ function generateRandomExercise() {
   dividend.value = Math.floor(Math.random() * (800 - 5 + 1) + 5);
   guess.value = null;
   isRevealed.value = false;
+  nextTick(() => guessInput.value?.focus());
 }
 
 function evaluateScore() {
@@ -125,11 +127,12 @@ const scaleY = computed(() => {
         </div>
         <div class="card-actions mt-6 pt-2 w-full">
           <input
+            ref="guessInput"
             type="number"
             class="input p2 text-4xl"
             v-model="guess"
             v-if="!isRevealed"
-            @keyup.enter="isRevealed = true"
+            @keyup.enter="guess != null && (isRevealed = true)"
           />
           <button
             class="btn btn-primary"
