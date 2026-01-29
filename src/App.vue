@@ -1,33 +1,29 @@
 <script setup>
-import words from "./words.js";
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 
 const dividend = ref(0);
-const divisor = ref(1.09);
+const divisor = ref(1.2);
 const guess = ref(0);
 const results = ref([]);
 
 const homeCurrency = ref("EUR");
 const foreignCurrency = ref("USD");
 
-let unitsPracticedToday = 0;
-let unitsPracticedYesterday = 0;
-
-// same with localStorage stats
-let stats = {};
-if (!localStorage.getItem("stats")) {
-  stats = {
-    counter: 0,
-  };
-} else {
-  stats = JSON.parse(localStorage.getItem("stats"));
-}
-
 let isRevealed = ref(false);
 
-let valueEase = ref(null);
-let valueCorrect = ref(null);
-let valueAnki = ref(null);
+function handleGlobalKeydown(e) {
+  if (e.key === "Enter" && isRevealed.value) {
+    evaluateScore();
+  }
+}
+
+onMounted(() => {
+  window.addEventListener("keydown", handleGlobalKeydown);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("keydown", handleGlobalKeydown);
+});
 
 generateRandomExercise();
 
@@ -133,16 +129,17 @@ const scaleY = computed(() => {
             class="input p2 text-4xl"
             v-model="guess"
             v-if="!isRevealed"
+            @keyup.enter="isRevealed = true"
           />
           <button
             class="btn btn-primary"
             @click="isRevealed = true"
             v-if="!isRevealed"
           >
-            Check
+            Check <kbd class="kbd kbd-sm">↵</kbd>
           </button>
           <button class="btn btn-primary" @click="evaluateScore" v-else>
-            Next Exercise
+            Next Exercise <kbd class="kbd kbd-sm">↵</kbd>
           </button>
         </div>
       </div>
