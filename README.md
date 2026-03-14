@@ -1,6 +1,6 @@
 # Currency-Conversion-Pratice
 
-![Screenshot](screenshot.png)
+![Screenshot](doc/screenshot.png)
 
 **Practice converting currencies in your head.**
 

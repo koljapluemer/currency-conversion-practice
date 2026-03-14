@@ -93,119 +93,70 @@ const scaleY = computed(() => {
 </script>
 
 <template>
-  <main class="min-h-screen bg-base-300 p-4 md:p-8">
-    <div class="mx-auto max-w-lg flex flex-col gap-4">
 
-      <!-- Config: collapsible, compact -->
-      <details class="collapse collapse-arrow bg-base-200 rounded-box">
-        <summary class="collapse-title text-sm font-medium py-3 min-h-0">
-          {{ foreignCurrency }} → {{ homeCurrency }} @ {{ divisor }}
-        </summary>
-        <div class="collapse-content flex flex-col gap-2 pb-4">
-          <div class="flex gap-2">
-            <input
-              type="text"
-              class="input input-sm flex-1"
-              placeholder="Foreign"
-              v-model="foreignCurrency"
-            />
-            <input
-              type="text"
-              class="input input-sm flex-1"
-              placeholder="Home"
-              v-model="homeCurrency"
-            />
-          </div>
-          <input
-            type="number"
-            class="input input-sm"
-            placeholder="Rate"
-            v-model="divisor"
-            step="0.01"
-          />
-        </div>
-      </details>
-
-      <!-- Exercise: prominent -->
-      <div class="card bg-base-200">
-        <div class="card-body gap-4 p-6">
-          <h2 class="text-2xl md:text-3xl font-bold">
-            {{ dividend }} {{ foreignCurrency }} = ?
-          </h2>
-
-          <div v-if="isRevealed" class="text-lg opacity-80">
-            You guessed <span class="font-semibold">{{ guess }}</span>.
-            It's <span class="font-semibold text-primary">{{ (dividend / divisor).toFixed(2) }}</span> {{ homeCurrency }}.
-            <span class="block text-sm mt-1" :class="Math.abs(currentError) < 1 ? 'text-success' : ''">
-              <template v-if="Math.abs(currentError) < 1">Spot on!</template>
-              <template v-else>{{ Math.abs(currentError).toFixed(0) }}% too {{ currentError > 0 ? 'high' : 'low' }}</template>
-            </span>
-          </div>
-
-          <div class="flex gap-2 mt-2">
-            <input
-              ref="guessInput"
-              type="number"
-              class="input input-bordered flex-1 text-xl"
-              :placeholder="homeCurrency"
-              v-model="guess"
-              v-if="!isRevealed"
-              @keyup.enter="guess != null && (isRevealed = true)"
-            />
-            <button
-              class="btn btn-primary"
-              @click="isRevealed = true"
-              v-if="!isRevealed"
-            >
-              Check <kbd class="kbd kbd-xs ml-1">↵</kbd>
-            </button>
-            <button class="btn btn-primary flex-1" @click="evaluateScore" v-else>
-              Next <kbd class="kbd kbd-xs ml-1">↵</kbd>
-            </button>
-          </div>
-        </div>
+  <!-- Config: collapsible, compact -->
+  <details class="collapse collapse-arrow bg-base-200 rounded-box">
+    <summary class="collapse-title text-sm font-medium py-3 min-h-0">
+      {{ foreignCurrency }} → {{ homeCurrency }} @ {{ divisor }}
+    </summary>
+    <div class="collapse-content flex flex-col gap-2 pb-4">
+      <div class="flex gap-2">
+        <input type="text" class="input input-sm flex-1" placeholder="Foreign" v-model="foreignCurrency" />
+        <input type="text" class="input input-sm flex-1" placeholder="Home" v-model="homeCurrency" />
       </div>
-
-      <!-- Graph: minimal -->
-      <div class="card bg-base-200" v-if="results.length || isRevealed">
-        <div class="card-body p-4">
-          <svg
-            :viewBox="`0 0 ${width} ${height}`"
-            class="w-full h-auto"
-            preserveAspectRatio="xMidYMid meet"
-          >
-            <!-- Zero line -->
-            <line
-              :x1="margin"
-              :y1="scaleY(0)"
-              :x2="width - margin"
-              :y2="scaleY(0)"
-              class="stroke-base-content/20"
-              stroke-width="1"
-            />
-
-            <!-- Data points -->
-            <circle
-              v-for="(point, index) in results.slice(-20)"
-              :key="index"
-              :cx="scaleX(index)"
-              :cy="scaleY(point.missedByPercent)"
-              r="4"
-              class="fill-primary"
-            />
-
-            <!-- Current guess (white) -->
-            <circle
-              v-if="isRevealed && currentError != null"
-              :cx="scaleX(results.length)"
-              :cy="scaleY(currentError)"
-              r="5"
-              fill="white"
-            />
-          </svg>
-        </div>
-      </div>
-
+      <input type="number" class="input input-sm" placeholder="Rate" v-model="divisor" step="0.01" />
     </div>
-  </main>
+  </details>
+
+  <!-- Exercise: prominent -->
+  <div class="card bg-base-200">
+    <div class="card-body gap-4 p-6">
+      <h2 class="text-2xl md:text-3xl font-bold">
+        {{ dividend }} {{ foreignCurrency }} = ?
+      </h2>
+
+      <div v-if="isRevealed" class="text-lg opacity-80">
+        You guessed <span class="font-semibold">{{ guess }}</span>.
+        It's <span class="font-semibold text-primary">{{ (dividend / divisor).toFixed(2) }}</span> {{ homeCurrency
+        }}.
+        <span class="block text-sm mt-1" :class="Math.abs(currentError) < 1 ? 'text-success' : ''">
+          <template v-if="Math.abs(currentError) < 1">Spot on!</template>
+          <template v-else>{{ Math.abs(currentError).toFixed(0) }}% too {{ currentError > 0 ? 'high' : 'low'
+          }}</template>
+        </span>
+      </div>
+
+      <div class="flex gap-2 mt-2">
+        <input ref="guessInput" type="number" class="input input-bordered flex-1 text-xl" :placeholder="homeCurrency"
+          v-model="guess" v-if="!isRevealed" @keyup.enter="guess != null && (isRevealed = true)" />
+        <button class="btn btn-primary" @click="isRevealed = true" v-if="!isRevealed">
+          Check <kbd class="kbd kbd-xs ml-1">↵</kbd>
+        </button>
+        <button class="btn btn-primary flex-1" @click="evaluateScore" v-else>
+          Next <kbd class="kbd kbd-xs ml-1">↵</kbd>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Graph: minimal -->
+  <div class="card bg-base-200" v-if="results.length || isRevealed">
+    <div class="card-body p-4">
+      <svg :viewBox="`0 0 ${width} ${height}`" class="w-full h-auto" preserveAspectRatio="xMidYMid meet">
+        <!-- Zero line -->
+        <line :x1="margin" :y1="scaleY(0)" :x2="width - margin" :y2="scaleY(0)" class="stroke-base-content/20"
+          stroke-width="1" />
+
+        <!-- Data points -->
+        <circle v-for="(point, index) in results.slice(-20)" :key="index" :cx="scaleX(index)"
+          :cy="scaleY(point.missedByPercent)" r="4" class="fill-primary" />
+
+        <!-- Current guess (white) -->
+        <circle v-if="isRevealed && currentError != null" :cx="scaleX(results.length)" :cy="scaleY(currentError)" r="5"
+          fill="white" />
+      </svg>
+    </div>
+  </div>
+
+
 </template>

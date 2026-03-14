@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full w-full">
 
 <head>
   <meta charset="UTF-8">
@@ -9,10 +9,33 @@
   <meta name="description" content="Practice converting currencies in your head.">
 </head>
 
-<body>
-  <div id="app"></div>
-  <script type="module" src="/src/main.js"></script>
-  <script data-goatcounter="https://currency.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+<body class="h-full w-full flex flex-col items-center">
+  <main id="app" class="flex-1 flex flex-col items-center"></main>
+    <script type="module" src="/src/main.js"></script>
+    <footer class="card bg-base-200">
+      <div class="card-body">
+        <p>
+          Made by
+          <a class="link" href="https://koljasam.com/" target="_blank">Kolja Sam</a>.
+        </p>
+
+        <p class="text-base-content/90">
+          No personal data leaves your device. Cookies store progress locally. I am tracking page views with the
+          privacy-friendly <a href="https://www.goatcounter.com/" class="link" target="_blank">goatcounter</a>.
+        </p>
+
+        <p>If this app taught you something, you may want to <a href="https://ko-fi.com/S6S81CWUVD" target="_blank"
+            rel="noopener" class="link">
+            buy me a coffee
+          </a>.</p>
+      </div>
+    </footer>
+    <script>
+      window.goatcounter = {
+        path: function (p) { return location.host + p }
+      }
+    </script>
+    <script data-goatcounter="https://koljasam.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 
 </html>
